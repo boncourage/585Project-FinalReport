@@ -43,8 +43,8 @@ shinyUI(fluidPage(
               min = 0.1, max = 0.8, value = 0.5),
   br(),
   
-  helpText("First, select a period of time to see Relationship of House Price Index and Per Capita 
-           Personal Income of Metropolitan Cities in US. You can change Visualization views by dragging slider
+  helpText("First, select a period of time to see relationship of House Price Index and Per Capita 
+           Personal Income of Metropolitan Cities in US. You can change visualization views by dragging slider
            bars below."),
   br()
   #submitButton("Update View")
