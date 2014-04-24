@@ -2,8 +2,8 @@
 body {
    font-size: 16px;
    color:#272727;
-   #padding-left: 100px;
-   #padding-right: 100px;
+   padding-left: 100px;
+   padding-right: 100px;
 }
 pre {
   font-size: 12px;
