@@ -2,11 +2,11 @@
 body {
    font-size: 16px;
    color:#272727;
-   padding-left: 100px;
-   padding-right: 100px;
+   #padding-left: 100px;
+   #padding-right: 100px;
 }
 pre {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .name{
@@ -30,11 +30,11 @@ font-size:18px;
 
 </style>
 
-<p class="title" align="center">Stat585X Final Project : A Study on Housing Price Index in US states and metropolitan Areas</p>
+<p class="title" align="center">Stat585X Final Project : A Study on Housing Price Index in US states and Metropolitan Areas</p>
 <p class="name" align="center"> Jie Liu </p>
 
 <p id="caption"> 1.Introduction </p>
-It is well noted that the US economy has been thriving these years since Financial Crisis in 2007-2008. From the time we have arrived at Ames, Iowa, the rental prices in housing have been soaring without cease while at the same time I found that our salaries were also raised. This makes me curious of how housing prices in each US state as well as US major cities change during these years. I am also wondering that is there any difference for west coast, east coast and mid west? In this Project, I analyzed House Price Index in all US states and major cities and developed a shiny app for interactive visualization.
+It is well noted that the US economy has been thriving these years since Financial Crisis in 2007-2008. From the time we have arrived at Ames, Iowa, the rental prices in housing have been soaring without cease while at the same time I found that our salaries were also raised. This makes me curious of how housing price in each US state as well as US major cities change during these years. I am also wondering that is there any difference in HPI change among west coast, east coast and mid west? In this Project, I analyzed House Price Index in all 50 US states along with Washington D.C and 25 major cities and further developed a shiny app for interactive visualization.
 
 
 ```{r} 
@@ -66,10 +66,11 @@ Baltimore	MD, Denver	CO, Portland	OR, San Diego	CA, San Jose	CA, Charlotte	NC, K
 Pittsburgh	PA, Saint Louis	MO, Tampa	FL<br>
 
 (4)US personal income by Metropolitan Areas (http://www.bea.gov/regional/index.htm) <br>
-The exact url where I have downloaded my data is: http://www.bea.gov/iTable/iTable.cfm?reqid=70&step=1&isuri=1&acrdn=3#reqid=70&step=1&isuri=1&7028=30&7040=-1&7083=percentchange&7029=49&7022=49&7023=7&7024=non-industry&7025=5&7026=16740,28140,38300,41180,45300&7027=2012,2011,2010,2009,2008&7001=749&7031=5&7090=70&7033=-1  <br>
-On the website Bureau of Economic Analysis, choose Interactive Data tab and select Regional Data GDP and Personal Income on the right panel.Then choose Local Area Personal Income: Personal income, per capita personal income, and population (CA1-3) and then select Metropolitan Statistical Area. Next, choose 25 biggest cities that we are interested in and choose the unit of measurement: percent change from proceeding period. Choose Per Capita Personal Income (dollars) for statistic. <br>
+The exact url where I have downloaded my data is:<a href="http://www.bea.gov/iTable/iTable.cfm?reqid=70&step=1&isuri=1&acrdn=3#reqid=70&step=1&isuri=1&7028=30&7040=-1&7083=percentchange&7029=49&7022=49&7023=7&7024=non-industry&7025=5&7026=16740,28140,38300,41180,45300&7027=2012,2011,2010,2009,2008&7001=749&7031=5&7090=70&7033=-1"> click here for url </a>  <br>
+On the website Bureau of Economic Analysis, choose Interactive Data tab and select Regional Data GDP and Personal Income on the right panel.Then choose Local Area Personal Income: Personal income, per capita personal income, and population (CA1-3) and then select Metropolitan Statistical Area. Next, choose 25 biggest cities that we are interested in and choose the unit of measurement: percent change from proceeding period. Choose Per Capita Personal Income (dollars) for statistic. 
+
 <br>
-<image src="screenshot/shot1.jpg" alt="shot1" width="820" height="400" align="middle">
+<image src="screenshot/shot1.jpg" alt="shot1" width="1000" height="410" align="middle">
 <br>
 
 <p id="caption">3.Load Dataset</p>
@@ -77,7 +78,7 @@ First, we can load two datasets: HPI data for whole USA and for each state. The 
 
 (1)Load HPI data for USA
 url: http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_PO_summary.xls
-After Downloading the xls file, the easiest way to preprocess the data is to process in Excel to remove unnecessary information and save as csv file. Here we only keep seasonally adjusted Purchase Only Index and HPI index change over previous 4 quarters as well as over previous quarter. The missing value in the dataset is filled with zeros.
+After Downloading the xls file, the easiest way to preprocess the data is to process in Excel to remove unnecessary information and save as csv file. In the dataset I only kept seasonally adjusted Purchase Only Index , HPI change over previous 4 quarters, and HPI change over previous quarter. The missing value in the dataset is filled with zeros.
 ```{r}
 us<-read.csv("dataset/USAHPI.csv")
 colnames(us)[4:6]<-c("PurchaseOnlyIndex","change-Prev4Qt","change-PrevQtr")
@@ -90,11 +91,11 @@ url:http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_PO_state.txt
 allstate<-read.table("http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_PO_state.txt",fill=TRUE,header=TRUE,sep="")
 allstate<-select(allstate,state,yr,qtr,index_sa)
 colnames(allstate)[c(1:4)]<-c("Region","Year","Quarter","PurchaseOnlyIndex")
-print(paste("Unique Regions in the state Dataset:",length(unique(allstate$Region)),"states"))
+print(paste("Unique Regions in the state Dataset:",length(unique(allstate$Region)),"areas"))
 ```
 
 
-Then, we can import US state and city data for further plotting on US map. One thing to pay attention is that there are no DC and USA entries in usmap data while in allstate data, region for DC appears. We have to add these two parts into US map data. This is because my preliminary study shows that there is one outlier whose HPI index soars during the years, which is identified exactly as DC.
+Then, we can import US state and city data for further plotting on US map. One thing to pay attention to is that there are no DC and USA entries in usmap data while in allstate data, region for DC appears. We have to add these two parts into US map data. This is because my preliminary study shows that there is one outlier whose HPI index soars during the years, which is identified exactly as DC.
 
 (3) Load US map and US cities data
 ```{r}
@@ -120,13 +121,13 @@ head(metro2)
 
 <p id="caption">3.Analying Housing Price Index in each state over the years</p>
 <p id="subcaption">3.1 Summarising HPI of the United States</p>
-A summary of House Price Index(Purchase Only Index) for the whole country shows that the maximum of HPI index is 225.2 and Median of the index is 160.9. (where index for 1991-Quarter1 is set to 100)
+A summary of House Price Index(Purchase Only Index) for the whole country shows that the maximum of HPI index is 225.2 and the median is 160.9. (where index for 1991-Quarter1 is set to 100)
 ```{r}
 summary(us$PurchaseOnlyIndex)
 ```
 
 <p id="subcaption">3.2 Analyzing HPI of 50 US states and DC</p>
-First, I use package lubridate to deal with Dates.Year and Quarter were switched into DATE. Each quarter is represented by the first day of the beginning of the month in the quarter, eg.2007-01-01 represents the first quarter, 2007-04-01 represents the second quarter, 2007-07-01 represents the third quarter, and 2007-10-01 represents the fourth quarter. Then I averaged over 4 quarters of each year and generate a parallel coordinate plot according to years as well as making a time series plot for all quarters.
+First, I used package lubridate to deal with Dates.Year and Quarter were switched into DATE. Each quarter is represented by the first day of the beginning of the month in the quarter, eg.2007-01-01 represents the first quarter, 2007-04-01 represents the second quarter, 2007-07-01 represents the third quarter, and 2007-10-01 represents the fourth quarter. Then I averaged over 4 quarters of each year and generated a parallel coordinate plot according to years as well as making a time series plot for all quarters.
 ```{r}
 #Get Mean Index for Each Year for all states (Average over 4 Quarters)
 #Swith Year and Quarter Into DATE
@@ -146,7 +147,7 @@ df.states2<-merge(df.states2,class,id="Region")
 ```
 
 
-Next we can make a parallel Coordinate Plot of Purchase Only Index for each state in each year, grouped by US divisions and regional classes. From the result we can observe that HPI rises slowly from 1991 to 2000, and then increases exponentially since 2000 and reaches peak in 2008. After the year 2008, HPI drastically fell down and is fairly low in 2011-2012. However, we could also notice that in the past year 2013, it seems that the house maket is thriving and perhaps it is turning over. This is a positive sign for the turn around of economy, although we need more data to determine Whether the house market is recovering for sure. Moreover, the plot also shows that DC has not been affected by economy crisis significantly during 2007-2008, The HPI fell down a little bit and then went up immediately. HPI for DC is extremely high during these years compared to other regions in US based on the fact that the HPI is always higherest among all other areas since 2005.
+Next we can make a parallel Coordinate Plot of Purchase Only Index for each state in each year, grouped by US divisions and regional classes. From the result we can observe that HPI rises slowly from 1991 to 2000, and then increases exponentially since 2000 and reaches peak in 2008. After the year 2008, HPI drastically fell down and was fairly low in 2011-2012. However, we could also notice that in the past year 2013, it seems that the house maket is thriving and perhaps it is turning over. This is a positive sign for the turn around of economy, although we need more data to determine whether the house market is recovering for sure. Moreover, the plot also shows that DC has not been affected by economy crisis significantly during 2007-2008, The HPI fell down a little bit and then went up immediately. HPI for DC is extremely high during these years compared to other regions in US based on the fact that the HPI is always higherest among all other areas since 2005.
 ```{r fig.weight=14,fig.height=6, fig.align='center'}
 #Sum of Each Year-by Division
 ggparcoord(df.states2, columns = c(2:(length(df.states2)-3)), groupColumn = 27, scale = "globalminmax",
@@ -209,7 +210,7 @@ second<-mutcomb.sort$Division[2]
 third<-mutcomb.sort$Division[3]
 ```
 
-The sorted result shows that, Over the past one year from Q4 of 2012 to Q4 of 2013, the HPI change in Pacific area increases significantly. The second highest region is Mountain area. These two regions carry higher increase than HPI increase for the whole country. States in Pacific regions are:Alaska,California,Hawaii,Oregon,Washington and states in mountain regions are: Arizona, Colorado, Idaho, Montana, Nevada, New Mexico, Utah and Wyoming. This makes sense since we know that housing prices in Califonia and Alaska are always expensive as well as in its surrounding areas such as Arizona and Nevada. This also indicates that over the past year, housing maket has come back to life originated from the west coast and pacific areas.
+The sorted result shows that, Over the past one year from Q4 of 2012 to Q4 of 2013, the HPI change in Pacific area increases significantly. The second highest region is Mountain area. These two regions carry higher NPI increase than that of the whole country. States in Pacific regions are:Alaska,California,Hawaii,Oregon,Washington and states in mountain regions are: Arizona, Colorado, Idaho, Montana, Nevada, New Mexico, Utah and Wyoming. This makes sense since we know that housing prices in Califonia and Alaska are always expensive as well as in its surrounding areas such as Arizona and Nevada. This also indicates that over the past year, housing maket has come back to life originated from the west coast and pacific areas.
 ```{r}
 head(mutcomb.sort,10)
 print(class$Name[class$Division==as.character(top)], max.levels=0)
@@ -327,7 +328,7 @@ head(mutcomb.sort)
 
 <p id="caption">4.Housing Price Index and Per Capita Personal Income for 25 Metropolitan Cities</p>
 
-Next, relationship of HPI change and Per Capita personal income is analyzed. The first thing to do is to download Per Capita Personal Income for 25 metropolitan cities on Bereau of Economic Analysis.(http://www.bea.gov) The exact steps to download the data of interest is described in section2-(4). Income change is preferred and we are only interested in the past five years and 25 biggest cities as well. One thing to note is that on this website, the latest income change is from 2011-2012. Since defining of regions or areas are quite messy on different websites, I matched the city and county.etc in the downloaded dataset with information of 25 biggest cities. Then we need to preprocess the us.cities data by adding D.C entry. Here I used Arlignton,VA as the lat and lon of D.C since Arlington is quite close to D.C.
+Next, relationship of HPI change and Per Capita personal income is analyzed. The first thing to do is to download Per Capita Personal Income for 25 metropolitan cities on Bereau of Economic Analysis.(http://www.bea.gov) The exact steps to download the data of interest are described in section2(4). Income change is preferred and we are only interested in the past five years and 25 biggest cities as well. One thing to note is that on this website, the latest income change is from 2011-2012. Since defining of regions or areas is quite messy on different websites, I matched the city and county.etc in the downloaded dataset with information of 25 biggest cities. Then we need to preprocess the us.cities data by adding D.C entry. Here I used Arlignton,VA as the lat and lon of D.C since Arlington is quite close to D.C.
 ```{r}
 #Data1-US Cities:
 data(us.cities)
@@ -349,8 +350,16 @@ colnames(income)[3:7]<-c("income1","income2","income3","income4","income5")
 head(income)
 ```
 
-Load cleaned metro data and combine it with income data as well as the US cities coordinate data.
+The following figure is a parallel coordinate plot of Personal Income Change during the past years.Since year 2007, the personal income change first decreases to negative and then increases. During the period of 2008-2009, income change rate reaches lowest-below zero for all 25 biggest cities. However during these years, personal income change rate speeds up and exceeds the change rate before economy turndown.
+```{r fig.width=10, fig.height=6, fig.align='center'}
+
+ggparcoord(income, columns = c(3:7), groupColumn = 1, scale = "globalminmax",
+           missing = "exclude") + theme(legend.position = "bottom", text=element_text(size=14),legend.text = element_text(size =10),axis.text.x = element_text(size=12,angle=-45, vjust=0.5))+xlab("Period")+
+  scale_x_discrete("Period",labels=c("2007 - 2008", "2008 - 2009", "2009 - 2010","2010 - 2011","2011 - 2012"))+ylab("Income Change(%)")+ggtitle("Per Capita Personal Income Change")
+```
+
 ```{r}
+#Load cleaned metro data and combine it with income data as well as the US cities coordinate data.
 metro<-read.csv("dataset/HPI-25metro-clean.csv",header=TRUE)
 colnames(metro)[3:8]<-c("seven","eight","nine","ten","eleven","twelve")
 metrohpi<-mutate(metro,"hpi1"=100*(eight-seven)/seven,"hpi2"=100*(nine-eight)/eight,
@@ -361,7 +370,6 @@ income.hpi<-cbind(income, metrohpi[,-c(1:2)])
 income.hpi.map<-merge(income.hpi,us.cities,id=c("name","country.etc"))
 head(income.hpi.map)
 ```
-
 
 After loading the dataset, processed and combined them, we could map HPI change and Per Capita Income change on US map for a time period such as 2011-2012.The following figure shows percent change of HPI and income in year 2011-2012 shows the relationship of HPI and income changes in these large cities.Blue represents low HPI change and red represents high HPI change. The change in income over one year is represented by size of points. The bigger the points, the higher the increase of Per Capita Personal Income. We can tell that Personal income increases most in west coast such as San Francisco and San Jose with relatively low HPI increase.The HPI increases most in Baltimore,MD which is near DC area with an increase of 26.6%.
 ```{r fig.width=14,fig.height=10,fig.align='center'}
@@ -403,14 +411,23 @@ annotate("text",x=labeldata$x2+1,y=labeldata$y2,label=as.character(labeldata$tex
          alpha=I(0.6))+ggtitle("Percent Change of HPI and Income in major US cities during 2007-2008")
 ```
 
-This analysis on HPI and income change was also turned into a vivid Shiny App that can show the relationship of HPI change and income change in major US cities during a certain period of time of interest. The shiny App is in folder shiyApp on github.
+  This analysis on HPI and income change was also turned into a vivid Shiny App that can show the relationship of HPI change and income change in major US cities during a certain period of time of interest. The shiny App is in folder shiyApp on github. The following two screenshots were taken from my Shiny App. Before running the app, we need to install packages including shiny, maps, ggmap, grid, and dplyr. 
+  In this easy App, there are three tabs. The first tab Plot shows HPI and personal income changes in a given period of time.On the left panel, user can select the period of time they are interested in. The visualization can also be adjusted by hiding/showing legend and labels as well as changing size and transparancy of points and label texts. The second tab Summary displays a summary of dataset for HPI and income during a selected period. We can know about min(max) of HPI and Income change. The third tab is a table view of the dataset, I used renderDataTable which is quite fancy to show results including sorting, change number of observations, search by keyword, etc.
+
+<br>
+<image src="screenshot/shot2.jpg" alt="shot1" width="880" height="500" align="middle">
+<br>
+
+<br>
+<image src="screenshot/shot3.jpg" alt="shot1" width="880" height="500" align="middle">
+<br>
 
 
 
 <p id="caption">5.Summary</p>
-  This project helps me to get a deeper knowledge and substantial practice in data technology skills. The skills that I used in the project which were acquired in the class includes:processing date and time using lubridate, dplyr to reshape dataset, US map to plot results on, extensively using ggplot2, develop an shiny App. In the easy App, there are three tabs. The first tab Plot shows HPI and personal income changes in a given period of time.On the left panel, user can select the period of time they are interested in. The visualization can also be adjusted by hiding/showing legend and labels as well as changing size and transparancy of points and label texts. The second tab Summary displays a summary of dataset for hpi and income during a selected period. We can know about min(max) of HPI and Income change. The third tab is a table view of the dataset, I used renderDataTable which is quite fancy to show results including sorting, change number of observations, serach by keyword, etc. 
+  This project helps me to get a deeper knowledge and substantial practice in data technology skills. The skills applied in the project which I have learned in the class include: processing date and time using lubridate, using dplyr to reshape dataset, using US map to plot results on, extensively using ggplot2, and developing a shiny App.  
   <br>
-  After analyzing the datasets, it seems to me that during the past two years US economy has been turning around with a decrease in unemployment rate and a step-by-step rise in housing market. In this project, I have analyzed the HPI and HPI changes during different period of time as well as changes in per capita personal income at the meanwhile. I have decided to choose personal income rather than Gross Domestic(State) Product (mentioned in the proposal) in that personal income is more specific and better to reflect the purchase power of people in the big cities. 
+  After analyzing the datasets, it seems to me that during the past two years US economy has been turning around with a step-by-step rise in housing market. In this project, I have analyzed the HPI and HPI changes during different period of time as well as changes in per capita personal income at the meanwhile. I have decided to choose personal income rather than Gross Domestic(State) Product (mentioned in the proposal) in that personal income is more specific and better to reflect the purchase power of people in the big cities. 
   In terms of HPI and HPI changes, Washington D.C stands out with highest HPI value as well as high HPI changes except for the 4th quarter in 2013. One year's HPI increase is quite much in most regions in US with Mountain and Pacific areas rank top. Compared to five years' period, HPI increase is fairly low below 10% in most areas except that D.C experienced an increase of 26%. This shows that US housing market has fell down since 2007-2008 and now it has just come back to life. In the coming 2014-2015 period, the housing price may be expected to keep rising and perhaps it is just the time to buy.
 
 
